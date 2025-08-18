@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Odin Calculator Project</title>
+  <link rel="stylesheet" href="reset.css">
+  <link rel="stylesheet" href="styles.css">
+  <script src="calculator.js"></script>
+</head>
+<body>
+  <h1>Calculator</h1>
+  <p>2 + 1 = <span id="addResult"></span></p>
+  <p>2 - 1 = <span id="subtractResult"></span></p>
+  <p>4 * 2 = <span id="multiplyResult"></span></p>
+  <p>4 / 2 = <span id="divideResult"></span></p>
+  <script>
+    let element = document.querySelector('#addResult');
+    element.textContent = add("2", "1");
+
+    element = document.querySelector('#subtractResult');
+    element.textContent = subtract("2", "1");
+
+    element = document.querySelector('#multiplyResult');
+    element.textContent = multiply("4", "2");
+
+    element = document.querySelector('#divideResult');
+    element.textContent = divide("4", "2");
+  </script>
+</body>
+</html>
