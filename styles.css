@@ -26,12 +26,20 @@
   height: var(--button-width);
   margin: 10px;
   display: flex;
-  justify-content: right;
-  align-items: center;
+  align-items: center; /* Vertically centers the items */
+}
+
+#operator {
+  min-width: 30px; /* Gives the operator a consistent width */
+  text-align: center;
+  margin: 3px 5px;
 }
 
 #output {
   margin: 3px 5px;
+  flex-grow: 1; /* Allows this element to grow and fill available space */
+  text-align: right; /* Aligns the number to the right, like a real calculator */
+  padding: 0 5px; /* Adds some space from the edge */
 }
 
 #keyboard {

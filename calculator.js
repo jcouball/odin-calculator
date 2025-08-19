@@ -27,20 +27,13 @@ function operate(operator, num1, num2) {
   }
 }
 
+let operatorElement = document.querySelector("#operator");
 let outputElement = document.querySelector("#output");
 let keyboardElement = document.querySelector("#keyboard");
 
-function trimForDisplay(string) {
-  let result = "";
-  for (let i = 0 ; i < string.length; i++) {
-    digit = string[i];
-    if (digit != "0" || result.length > 0) result += digit;
-  }
-  if (result === "") result = "0";
-  return result;
-}
+function updateDisplay(numberString, operator) {
+  operatorElement.textContent = operator ? operator : "";
 
-function updateDisplay(numberString, _operator) {
   if (numberString === "") {
     outputElement.textContent = "0";
   }
@@ -73,67 +66,77 @@ function inputAsNumber() {
   return Number(input);
 }
 
+function handleSpecialFunction(specialFunction) {
+  if (specialFunction === "AC") {
+    clearCalculator();
+  }
+  else if (specialFunction === "BS") {
+    if (input.length > 0) {
+      input = input.slice(0, -1);
+      updateDisplay(input, operator);
+    }
+  }
+}
+
+function handleOperator(newOperator) {
+  if (operator) {
+    result = operate(operator, result, inputAsNumber());
+  }
+  else if (input !== "") {
+    result = inputAsNumber();
+  }
+
+  operator = newOperator;
+  updateDisplay(result, operator);
+  input = "";
+}
+
+function handleEquals() {
+  if (operator) {
+    result = operate(operator, result, inputAsNumber());
+    operator = undefined;
+    updateDisplay(result, operator);
+    input = "";
+  }
+}
+
+function handleDigit(inputKey) {
+  if (input === "0" && inputKey !== ".") {
+    console.log(inputKey);
+    input = inputKey;
+  }
+  else if (input === "0" && inputKey === "0") {
+    // Reject input -- do not allow multiple leading zeros
+  }
+  else if (input === "" && inputKey === ".") {
+    input = "0.";
+  }
+  else if (input !== "" && input.includes(".") && inputKey === ".") {
+    // Reject input -- do not allow multiple decimal points
+  }
+  else {
+    input += inputKey;
+  }
+
+  updateDisplay(input, operator);
+}
+
 function keyPress(event) {
   let button = event.target;
 
   if (!isButton(button)) return;
 
   if (isSpecialButton(button)) {
-    if (event.target.textContent === "AC") {
-      clearCalculator();
-    }
-    else if (event.target.textContent === "BS") {
-      if (input.length > 0) {
-        input = input.slice(0, -1);
-        updateDisplay(input, operator);
-      }
-    }
+    handleSpecialFunction(event.target.textContent);
   }
   else if (isOperatorButton(button)) {
-    let newOperator = button.textContent;
-
-    if (operator) {
-      result = operate(operator, result, inputAsNumber());
-    }
-    else if (input !== "") {
-      result = inputAsNumber();
-    }
-
-    operator = newOperator;
-
-    updateDisplay(result, operator);
-
-    input = "";
+    handleOperator(button.textContent);
   }
   else if (isEqualsButton(button)) {
-    if (operator) {
-      result = operate(operator, result, inputAsNumber());
-      operator = undefined;
-      updateDisplay(result, operator);
-      input = "";
-    }
+    handleEquals();
   }
   else if (isDigitButton(button)) {
-    inputKey = button.textContent;
-
-    if (input === "0" && inputKey !== ".") {
-      console.log(inputKey);
-      input = inputKey;
-    }
-    else if (input === "0" && inputKey === "0") {
-      // Reject input -- do not allow multiple leading zeros
-    }
-    else if (input === "" && inputKey === ".") {
-      input = "0.";
-    }
-    else if (input !== "" && input.includes(".") && inputKey === ".") {
-      // Reject input -- do not allow multiple decimal points
-    }
-    else {
-      input += inputKey;
-    }
-
-    updateDisplay(input, operator);
+    handleDigit(button.textContent)
   }
 }
 
