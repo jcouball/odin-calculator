@@ -6,30 +6,57 @@
   <title>Odin Calculator Project</title>
   <link rel="stylesheet" href="reset.css">
   <link rel="stylesheet" href="styles.css">
-  <script src="calculator.js"></script>
+  <script src="calculator.js" defer></script>
 </head>
 <body>
   <h1>Calculator</h1>
-  <p>2 + 1 = <span id="addResult"></span></p>
-  <p>2 - 1 = <span id="subtractResult"></span></p>
-  <p>4 * 2 = <span id="multiplyResult"></span></p>
-  <p>4 / 2 = <span id="divideResult"></span></p>
-  <script>
-    let operator = "";
-    let num1 = "";
-    let num2 = "";
 
-    let element = document.querySelector('#addResult');
-    element.textContent = operate("+", "2", "1");
+  <style>
+  </style>
 
-    element = document.querySelector('#subtractResult');
-    element.textContent = operate("-", "2", "1");
+  <div id="calculator">
+    <div id="display">
+      <div id="output">0</div>
+    </div>
+    <div id="keyboard">
+      <div class="row">
+        <button type="button" class="function special">BS</button>
+        <button type="button" class="function special">AC</button>
+      </div>
+      <div class="row">
+        <button type="button" class="digit">1</button>
+        <button type="button" class="digit">2</button>
+        <button type="button" class="digit">3</button>
+        <button type="button" class="function operator">+</button>
+      </div>
+      <div class="row">
+        <button type="button" class="digit">4</button>
+        <button type="button" class="digit">5</button>
+        <button type="button" class="digit">6</button>
+        <button type="button" class="function operator">-</button>
+      </div>
+      <div class="row">
+        <button type="button" class="digit">7</button>
+        <button type="button" class="digit">8</button>
+        <button type="button" class="digit">9</button>
+        <button type="button" class="function operator">*</button>
+      </div>
+      <div class="row">
+        <button type="button" class="digit">0</button>
+        <button type="button" class="digit">.</button>
+        <button type="button" class="function equals">=</button>
+        <button type="button" class="function operator">/</button>
+      </div>
+    </div>
 
-    element = document.querySelector('#multiplyResult');
-    element.textContent = operate("*", "4", "2");
-
-    element = document.querySelector('#divideResult');
-    element.textContent = operate("/", "4", "2");
-  </script>
+  </div>
 </body>
 </html>
+
+<!--
+         AC
+ 7  8  9  +
+ 4  5  6  -
+ 1  2  3  *
+ 0  .  =  /
+-->

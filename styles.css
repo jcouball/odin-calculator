@@ -1,0 +1,110 @@
+/* div { border: 1px solid black } */
+
+:root {
+  --calculator-width: 300px;
+  --calculator-margin: 10px;
+  --display-width: calc(var(--calculator-width) - var(--calculator-margin) * 2);
+  --button-width: calc((var(--calculator-width) - var(--calculator-margin) * 2)/4);
+}
+
+#calculator {
+  border: 1px solid black;
+  margin: 10px;
+
+  width: var(--calculator-width);
+  display: flex;
+  flex-direction: column;
+
+  /* Font and Sizing */
+  font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+#display {
+  border: 1px solid black;
+  height: var(--button-width);
+  margin: 10px;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+}
+
+#output {
+  margin: 3px 5px;
+}
+
+#keyboard {
+  margin: 10px;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+}
+
+button {
+  min-width: var(--button-width);
+  min-height: var(--button-width);
+  /* New properties for vertical centering */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+button {
+  /* Color and Appearance */
+  color: #333;
+  background-color: #e0e0e0; /* Light gray button face */
+  border: none;
+  border-radius: 8px;
+
+  /* 3D Effect using borders */
+  border-bottom: 4px solid #b0b0b0; /* Darker bottom border for shadow */
+  border-right: 2px solid #b0b0b0;
+  border-top: 2px solid #f0f0f0;   /* Lighter top border for highlight */
+  border-left: 2px solid #f0f0f0;
+
+  /* Behavior */
+  cursor: pointer;
+  outline: none;
+  transition: all 0.1s ease-in-out;
+}
+
+/* Hover State: Button lifts slightly */
+button:hover {
+  background-color: #e8e8e8;
+  transform: translateY(-2px);
+}
+
+/* Active/Pressed State: Button pushes in */
+button:active {
+  transform: translateY(2px);
+  /* Reverse the borders to create the "pressed in" illusion */
+  border-top: 4px solid #b0b0b0;
+  border-left: 2px solid #b0b0b0;
+  border-bottom: 2px solid #f0f0f0;
+  border-right: 2px solid #f0f0f0;
+}
+
+/* Modifier for function buttons (e.g., +, -, C) */
+button.function {
+  background-color: #f39c12; /* Retro Orange */
+  color: white;
+  border-bottom: 4px solid #b8730e;
+  border-right: 2px solid #b8730e;
+  border-top: 2px solid #f5b041;
+  border-left: 2px solid #f5b041;
+}
+
+button.function:hover {
+  background-color: #f5a623;
+}
+
+button.function:active {
+  border-top: 4px solid #b8730e;
+  border-left: 2px solid #b8730e;
+  border-bottom: 2px solid #f5b041;
+  border-right: 2px solid #f5b041;
+}
