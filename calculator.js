@@ -102,7 +102,6 @@ function handleEquals() {
 
 function handleDigit(inputKey) {
   if (input === "0" && inputKey !== ".") {
-    console.log(inputKey);
     input = inputKey;
   }
   else if (input === "0" && inputKey === "0") {
