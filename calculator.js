@@ -1,17 +1,29 @@
 function add(operand1, operand2) {
-  return Number(operand1) + Number(operand2);
+  return operand1 + operand2;
 }
 
 function subtract(operand1, operand2) {
-  return Number(operand1) - Number(operand2);
+  return operand1 - operand2;
 }
 
 function multiply(operand1, operand2) {
-  return Number(operand1) * Number(operand2);
+  return operand1 * operand2;
 }
 
 function divide(operand1, operand2) {
-  return Number(operand1) / Number(operand2);
+  if (operand2 === 0) {
+    return "DIV_BY_ZERO";
+  }
+
+  return operand1 / operand2;
+}
+
+let errors = {
+  "DIV_BY_ZERO": "Divide by Zero",
+}
+
+function errorMessage(error) {
+  return errors[error];
 }
 
 function operate(operator, num1, num2) {
@@ -78,9 +90,24 @@ function handleSpecialFunction(specialFunction) {
   }
 }
 
+function handleError(error) {
+  clearCalculator();
+  displayMessage = errorMessage(error) || `ERR: ${error}`;
+  outputElement.textContent = displayMessage;
+}
+
 function handleOperator(newOperator) {
+  if (input === "" && result == undefined) return;
+
   if (operator) {
-    result = operate(operator, result, inputAsNumber());
+    const calculationResult = operate(operator, result, inputAsNumber());
+
+    if (typeof calculationResult === "string") {
+      handleError(calculationResult);
+      return; // Stop further processing
+    }
+
+    result = calculationResult;
   }
   else if (input !== "") {
     result = inputAsNumber();
@@ -93,7 +120,15 @@ function handleOperator(newOperator) {
 
 function handleEquals() {
   if (operator) {
-    result = operate(operator, result, inputAsNumber());
+    const calculationResult = operate(operator, result, inputAsNumber());
+
+    if (typeof calculationResult === "string") {
+      handleError(calculationResult);
+      return; // Stop further processing
+    }
+
+    result = calculationResult;
+
     operator = undefined;
     updateDisplay(result, operator);
     input = "";
@@ -144,7 +179,7 @@ let result; // Number or undefined
 let operator; // Single character string or undefined
 
 function clearCalculator() {
-  input = "0";
+  input = "";
   result = undefined;
   operator = undefined;
   updateDisplay(input, operator);
