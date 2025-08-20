@@ -80,19 +80,19 @@ function isButton(element) {
   return element.nodeName === "BUTTON";
 }
 
-function isSpecialButton(button) {
+function isSpecialFunction(button) {
   return button.classList.contains("special");
 }
 
-function isOperatorButton(button) {
+function isOperator(button) {
   return button.classList.contains("operator");
 }
 
-function isEqualsButton(button) {
+function isEquals(button) {
   return button.classList.contains("equals");
 }
 
-function isDigitButton(button) {
+function isDigit(button) {
   return button.classList.contains("digit");
 }
 
@@ -157,44 +157,47 @@ function handleEquals() {
   }
 }
 
-function handleDigit(inputKey) {
+function handleDigit(inputDigit) {
   if (input.length >= 12) return;
 
-  if (input === "0" && inputKey !== ".") {
-    input = inputKey;
+  if (input === "0" && inputDigit !== ".") {
+    input = inputDigit;
   }
-  else if (input === "0" && inputKey === "0") {
+  else if (input === "0" && inputDigit === "0") {
     // Reject input -- do not allow multiple leading zeros
   }
-  else if (input === "" && inputKey === ".") {
+  else if (input === "" && inputDigit === ".") {
     input = "0.";
   }
-  else if (input !== "" && input.includes(".") && inputKey === ".") {
+  else if (input !== "" && input.includes(".") && inputDigit === ".") {
     // Reject input -- do not allow multiple decimal points
   }
   else {
-    input += inputKey;
+    input += inputDigit;
   }
 
   updateDisplay(input, operator);
 }
 
-function keyPress(event) {
+function onClick(event) {
   let button = event.target;
 
-  if (!isButton(button)) return;
+  const { action } = button.dataset;
+  const value = button.textContent;
 
-  if (isSpecialButton(button)) {
-    handleSpecialFunction(event.target.textContent);
-  }
-  else if (isOperatorButton(button)) {
-    handleOperator(button.textContent);
-  }
-  else if (isEqualsButton(button)) {
-    handleEquals();
-  }
-  else if (isDigitButton(button)) {
-    handleDigit(button.textContent)
+  switch (action) {
+    case 'special':
+      handleSpecialFunction(value);
+      break;
+    case 'operator':
+      handleOperator(value);
+      break;
+    case 'equals':
+      handleEquals();
+      break;
+    case 'digit':
+      handleDigit(value);
+      break;
   }
 }
 
@@ -210,4 +213,4 @@ function clearCalculator() {
 }
 
 clearCalculator();
-keyboardElement.addEventListener('click', keyPress);
+keyboardElement.addEventListener('click', onClick);
