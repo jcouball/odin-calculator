@@ -7,7 +7,7 @@
   --button-width: calc((var(--calculator-width) - var(--calculator-margin) * 2)/4);
 }
 
-#calculator {
+.calculator {
   border: 1px solid black;
   margin: 10px;
 
@@ -21,7 +21,12 @@
   font-weight: bold;
 }
 
-#display {
+.calculator:focus-within {
+  outline: 3px solid #4A90E2;
+  border-radius: 2px;
+}
+
+.calculator .display {
   border: 1px solid black;
   height: var(--button-width);
   margin: 10px;
@@ -29,30 +34,30 @@
   align-items: center; /* Vertically centers the items */
 }
 
-#operator {
+.calculator .operator {
   min-width: 30px; /* Gives the operator a consistent width */
   text-align: center;
   margin: 3px 5px;
 }
 
-#output {
+.calculator .output {
   margin: 3px 5px;
   flex-grow: 1; /* Allows this element to grow and fill available space */
   text-align: right; /* Aligns the number to the right, like a real calculator */
   padding: 0 5px; /* Adds some space from the edge */
 }
 
-#keyboard {
+.calculator .keyboard {
   margin: 10px;
 }
 
-.row {
+.calculator .row {
   display: flex;
   flex-direction: row;
   justify-content: right;
 }
 
-button {
+.calculator button {
   min-width: var(--button-width);
   min-height: var(--button-width);
   /* New properties for vertical centering */
@@ -61,7 +66,7 @@ button {
   align-items: center;
 }
 
-button {
+.calculator button {
   /* Color and Appearance */
   color: #333;
   background-color: #e0e0e0; /* Light gray button face */
@@ -81,13 +86,13 @@ button {
 }
 
 /* Hover State: Button lifts slightly */
-button:hover {
+.calculator button:hover {
   background-color: #e8e8e8;
   transform: translateY(-2px);
 }
 
 /* Active/Pressed State: Button pushes in */
-button:active {
+.calculator button:active {
   transform: translateY(2px);
   /* Reverse the borders to create the "pressed in" illusion */
   border-top: 4px solid #b0b0b0;
@@ -97,7 +102,7 @@ button:active {
 }
 
 /* Modifier for function buttons (e.g., +, -, C) */
-button.function {
+.calculator button.function {
   background-color: #f39c12; /* Retro Orange */
   color: white;
   border-bottom: 4px solid #b8730e;
@@ -106,13 +111,14 @@ button.function {
   border-left: 2px solid #f5b041;
 }
 
-button.function:hover {
+.calculator button.function:hover {
   background-color: #f5a623;
 }
 
-button.function:active {
+.calculator button.function:active {
   border-top: 4px solid #b8730e;
   border-left: 2px solid #b8730e;
   border-bottom: 2px solid #f5b041;
   border-right: 2px solid #f5b041;
 }
+

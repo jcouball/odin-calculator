@@ -30,9 +30,15 @@ const calculation = {
  *
  * It knows how to display values, the effective operator, and errors.
  */
-const display = {
-  operatorElement: document.querySelector("#operator"),
-  outputElement: document.querySelector("#output"),
+class Display {
+  constructor(rootElement) {
+    this.operatorElement = rootElement.querySelector(".operator");
+    this.outputElement = rootElement.querySelector(".output");
+    this.errors = {
+      [errorCodes.DIV_BY_ZERO]: "Divide by Zero",
+      [errorCodes.OVERFLOW]: "Number Too Large",
+    };
+  }
 
   /**
    * Formats a value for display and displays the value and effective operator
@@ -42,24 +48,19 @@ const display = {
    * @returns {void}
    * @throws {Error} Throws an error with the message 'OVERFLOW' if the display text exceeds 12 characters
    */
-  update: function(value, operator) {
+  update(value, operator) {
     // Only format the value if it is a number
     let valueToDisplay = typeof value === 'number' ? this.format(value) : value;
 
     this.operatorElement.textContent = operator ? operator : "";
     this.outputElement.textContent = valueToDisplay === "" ? "0" : valueToDisplay;
-  },
+  }
 
-  errors: {
-    [errorCodes.DIV_BY_ZERO]: "Divide by Zero",
-    [errorCodes.OVERFLOW]: "Number Too Large",
-  },
-
-  error: function(errorCode) {
+  error(errorCode) {
     const displayMessage = this.errors[errorCode] || `ERR: ${errorCode}`;
     this.operatorElement.textContent = "";
     this.outputElement.textContent = displayMessage;
-  },
+  }
 
   /**
    * Formats a number for display, ensuring it fits within a 12-character limit.
@@ -71,7 +72,7 @@ const display = {
    * @returns {string} The formatted number as a string, no longer than 12 characters.
    * @throws {Error} Throws an error with the message 'OVERFLOW' if the integer part of the number exceeds 12 digits.
    */
-  format: function(num) {
+  format(num) {
     const integerPart = String(Math.trunc(num));
 
     if (integerPart.length > 12) throw new Error(errorCodes.OVERFLOW);
@@ -90,41 +91,60 @@ const display = {
     }
 
     return num.toFixed(decimalPlaces);
-  },
+  }
 };
 
 /**
  * Main application layer for the calculator application
  */
-const calculator = {
-  input: "", // String
-  result: undefined, // Number or undefined
-  operator: undefined, // Single character string or undefined
+class Calculator {
+  constructor(rootElement) {
+    this.rootElement = rootElement;
+    this.display = new Display(this.rootElement);
+    this.keyMap = {
+      '0': { action: 'digit' }, '1': { action: 'digit' }, '2': { action: 'digit' },
+      '3': { action: 'digit' }, '4': { action: 'digit' }, '5': { action: 'digit' },
+      '6': { action: 'digit' }, '7': { action: 'digit' }, '8': { action: 'digit' },
+      '9': { action: 'digit' }, '.': { action: 'digit' },
+      '+': { action: 'operator' }, '-': { action: 'operator' },
+      '*': { action: 'operator' }, '/': { action: 'operator' },
+      'Enter': { action: 'equals' }, '=': { action: 'equals' },
+      'Backspace': { action: 'special', value: 'BS' },
+      'Escape': { action: 'special', value: 'AC' },
+      'c': { action: 'special', value: 'AC' }, 'C': { action: 'special', value: 'AC' },
+    }
+  }
 
-  resetState: function() {
+  init() {
+    this.rootElement.addEventListener('click', this.onClick.bind(this));
+    this.rootElement.addEventListener('keydown', this.onKeydown.bind(this));
+    this.clearCalculator();
+  }
+
+  resetState() {
     this.input = "";
     this.result = undefined;
     this.operator = undefined;
-  },
+  }
 
-  handleError: function(error) {
+  handleError(error) {
     this.resetState();
-    display.error(error.message);
-  },
+    this.display.error(error.message);
+  }
 
-  handleSpecialFunction: function(specialFunction) {
+  handleSpecialFunction(specialFunction) {
     if (specialFunction === "AC") {
       this.clearCalculator();
     }
     else if (specialFunction === "BS") {
       if (this.input.length > 0) {
         this.input = this.input.slice(0, -1);
-        display.update(this.input, this.operator);
+        this.display.update(this.input, this.operator);
       }
     }
-  },
+  }
 
-  handleOperator: function(newOperator) {
+  handleOperator(newOperator) {
     if (this.input === "" && this.result == undefined) return;
 
     try {
@@ -137,28 +157,28 @@ const calculator = {
       this.operator = newOperator;
       this.input = "";
 
-      display.update(this.result, this.operator);
+      this.display.update(this.result, this.operator);
     }
     catch (error) {
       this.handleError(error);
     }
-  },
+  }
 
-  handleEquals: function() {
+  handleEquals() {
     if (!this.operator) return;
 
     try {
       this.result = calculation.operate(this.operator, this.result, Number(this.input));
       this.input = "";
       this.operator = undefined;
-      display.update(this.result, this.operator);
+      this.display.update(this.result, this.operator);
     }
     catch (error) {
       this.handleError(error);
     }
-  },
+  }
 
-  handleDigit: function(inputDigit) {
+  handleDigit(inputDigit) {
     if (this.input.length >= 12) return;
 
     if (this.input === "0" && inputDigit !== ".") {
@@ -177,47 +197,35 @@ const calculator = {
       this.input += inputDigit;
     }
 
-    display.update(this.input, this.operator);
-  },
+    this.display.update(this.input, this.operator);
+  }
 
-  clearCalculator: function() {
+  clearCalculator() {
     this.resetState();
-    display.update(this.input, this.operator);
-  },
+    this.display.update(this.input, this.operator);
+  }
 
-  dispatchAction: function(action, value) {
+  dispatchAction(action, value) {
     switch (action) {
       case 'digit': this.handleDigit(value); break;
       case 'operator': this.handleOperator(value); break;
       case 'equals': this.handleEquals(); break;
       case 'special': this.handleSpecialFunction(value); break;
     }
-  },
+  }
 
-  onClick: function(event) {
-    let target = event.target;
-    if (target.nodeName !== "BUTTON") return;
+  onClick(event) {
+    this.rootElement.focus();
 
-    const { action } = target.dataset;
-    const value = target.textContent;
+    const button = event.target.closest(`#${this.rootElement.id} button`);
+    if (button) {
+      const { action } = button.dataset;
+      const value = button.textContent;
+      this.dispatchAction(action, value);
+    }
+  }
 
-    this.dispatchAction(action, value);
-  },
-
-  keyMap: {
-    '0': { action: 'digit' }, '1': { action: 'digit' }, '2': { action: 'digit' },
-    '3': { action: 'digit' }, '4': { action: 'digit' }, '5': { action: 'digit' },
-    '6': { action: 'digit' }, '7': { action: 'digit' }, '8': { action: 'digit' },
-    '9': { action: 'digit' }, '.': { action: 'digit' },
-    '+': { action: 'operator' }, '-': { action: 'operator' },
-    '*': { action: 'operator' }, '/': { action: 'operator' },
-    'Enter': { action: 'equals' }, '=': { action: 'equals' },
-    'Backspace': { action: 'special', value: 'BS' },
-    'Escape': { action: 'special', value: 'AC' },
-    'c': { action: 'special', value: 'AC' }, 'C': { action: 'special', value: 'AC' },
-  },
-
-  handleKeyboardInput: function(e) {
+  onKeydown(e) {
     e.preventDefault();
     const keyInfo = this.keyMap[e.key];
     if (keyInfo) {
@@ -225,14 +233,9 @@ const calculator = {
       const value = keyInfo.value || e.key;
       this.dispatchAction(keyInfo.action, value);
     }
-  },
-
-  init: function() {
-    let keyboardElement = document.querySelector("#keyboard");
-    this.clearCalculator();
-    keyboardElement.addEventListener('click', this.onClick.bind(this));
-    window.addEventListener('keydown', this.handleKeyboardInput.bind(this));
   }
 };
 
-calculator.init();
+calculator1Element = document.querySelector("#calculator-1");
+calculator1 = new Calculator(calculator1Element);
+calculator1.init();
