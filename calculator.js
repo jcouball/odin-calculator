@@ -1,216 +1,238 @@
-function add(operand1, operand2) {
-  return operand1 + operand2;
-}
+const errorCodes = {
+  DIV_BY_ZERO: "DIV_BY_ZERO",
+  OVERFLOW: "OVERFLOW",
+};
 
-function subtract(operand1, operand2) {
-  return operand1 - operand2;
-}
+/**
+ * The raw calculation layer
+ */
+const calculation = {
+  add: (num1, num2) => num1 + num2,
+  subtract: (num1, num2) => num1 - num2,
+  multiply: (num1, num2) => num1 * num2,
+  divide: (num1, num2) => {
+    if (num2 == 0) throw new Error(errorCodes.DIV_BY_ZERO);
+    return num1 / num2;
+  },
 
-function multiply(operand1, operand2) {
-  return operand1 * operand2;
-}
-
-function divide(operand1, operand2) {
-  if (operand2 === 0) {
-    throw new Error("DIV_BY_ZERO");
-  }
-
-  return operand1 / operand2;
-}
-
-let errors = {
-  "DIV_BY_ZERO": "Divide by Zero",
-  "OVERFLOW": "Number Too Large",
-}
-
-function errorMessage(error) {
-  return errors[error];
-}
-
-function operate(operator, num1, num2) {
-  switch (operator) {
-    case '+':
-      return add(num1, num2);
-    case '-':
-      return subtract(num1, num2);
-    case '*':
-      return multiply(num1, num2);
-    case '/':
-      return divide(num1, num2);
-  }
-}
-
-let operatorElement = document.querySelector("#operator");
-let outputElement = document.querySelector("#output");
-let keyboardElement = document.querySelector("#keyboard");
-
-function formatForDisplay(num) {
-  const integerPart = String(Math.trunc(num));
-
-  if (integerPart.length > 12) throw new Error('OVERFLOW');
-
-  const numStr = String(num);
-
-  // If the number already fits, return it.
-  if (numStr.length <= 12) return numStr;
-
-  // It's a long decimal, so round it to fit.
-  const decimalPlaces = 12 - integerPart.length - 1;
-
-  // If the integer part is 12 digits, we can't show any decimals.
-  if (decimalPlaces < 0) {
-    return integerPart;
-  }
-
-  return num.toFixed(decimalPlaces);
-}
-
-function updateDisplay(numberString, operator) {
-  operatorElement.textContent = operator ? operator : "";
-
-  if (numberString === "") {
-    outputElement.textContent = "0";
-  }
-  else {
-    outputElement.textContent = numberString;
-  }
-}
-
-function isButton(element) {
-  return element.nodeName === "BUTTON";
-}
-
-function isSpecialFunction(button) {
-  return button.classList.contains("special");
-}
-
-function isOperator(button) {
-  return button.classList.contains("operator");
-}
-
-function isEquals(button) {
-  return button.classList.contains("equals");
-}
-
-function isDigit(button) {
-  return button.classList.contains("digit");
-}
-
-function inputAsNumber() {
-  return Number(input);
-}
-
-function handleSpecialFunction(specialFunction) {
-  if (specialFunction === "AC") {
-    clearCalculator();
-  }
-  else if (specialFunction === "BS") {
-    if (input.length > 0) {
-      input = input.slice(0, -1);
-      updateDisplay(input, operator);
+  operate: function(operator, num1, num2) {
+    switch (operator) {
+      case '+': return this.add(num1, num2);
+      case '-': return this.subtract(num1, num2);
+      case '*': return this.multiply(num1, num2);
+      case '/': return this.divide(num1, num2);
     }
   }
-}
+};
 
-function handleError(error) {
-  clearCalculator();
-  displayMessage = errorMessage(error) || `ERR: ${error}`;
-  outputElement.textContent = displayMessage;
-}
+/**
+ * The display layer for the calculator
+ *
+ * It knows how to display values, the effective operator, and errors.
+ */
+const display = {
+  operatorElement: document.querySelector("#operator"),
+  outputElement: document.querySelector("#output"),
 
-function handleOperator(newOperator) {
-  if (input === "" && result == undefined) return;
+  /**
+   * Formats a value for display and displays the value and effective operator
+   *
+   * @param {string|number} value - The number to be formatted and displayed
+   * @param {string|undefined} operator - The current operator that is in effect (or undefined)
+   * @returns {void}
+   * @throws {Error} Throws an error with the message 'OVERFLOW' if the display text exceeds 12 characters
+   */
+  update: function(value, operator) {
+    // Only format the value if it is a number
+    let valueToDisplay = typeof value === 'number' ? this.format(value) : value;
 
-  try {
-    if (operator) {
-      const calculationResult = operate(operator, result, inputAsNumber());
-      result = calculationResult;
-    } else if (input !== "") {
-      result = inputAsNumber();
+    this.operatorElement.textContent = operator ? operator : "";
+    this.outputElement.textContent = valueToDisplay === "" ? "0" : valueToDisplay;
+  },
+
+  errors: {
+    [errorCodes.DIV_BY_ZERO]: "Divide by Zero",
+    [errorCodes.OVERFLOW]: "Number Too Large",
+  },
+
+  error: function(errorCode) {
+    const displayMessage = this.errors[errorCode] || `ERR: ${errorCode}`;
+    this.operatorElement.textContent = "";
+    this.outputElement.textContent = displayMessage;
+  },
+
+  /**
+   * Formats a number for display, ensuring it fits within a 12-character limit.
+   *
+   * This function rounds long decimals to fit the display and throws an error
+   * for numbers whose integer part is too large to be shown.
+   *
+   * @param {number} num The number to be formatted.
+   * @returns {string} The formatted number as a string, no longer than 12 characters.
+   * @throws {Error} Throws an error with the message 'OVERFLOW' if the integer part of the number exceeds 12 digits.
+   */
+  format: function(num) {
+    const integerPart = String(Math.trunc(num));
+
+    if (integerPart.length > 12) throw new Error(errorCodes.OVERFLOW);
+
+    const numStr = String(num);
+
+    // If the number already fits, return it.
+    if (numStr.length <= 12) return numStr;
+
+    // It's a long decimal, so round it to fit.
+    const decimalPlaces = 12 - integerPart.length - 1;
+
+    // If the integer part is 12 digits, we can't show any decimals.
+    if (decimalPlaces < 0) {
+      return integerPart;
     }
 
-    const displayValue = formatForDisplay(result);
-    operator = newOperator;
-    updateDisplay(displayValue, operator);
-    input = "";
+    return num.toFixed(decimalPlaces);
+  },
+};
+
+/**
+ * Main application layer for the calculator application
+ */
+const calculator = {
+  input: "", // String
+  result: undefined, // Number or undefined
+  operator: undefined, // Single character string or undefined
+
+  resetState: function() {
+    this.input = "";
+    this.result = undefined;
+    this.operator = undefined;
+  },
+
+  handleError: function(error) {
+    this.resetState();
+    display.error(error.message);
+  },
+
+  handleSpecialFunction: function(specialFunction) {
+    if (specialFunction === "AC") {
+      this.clearCalculator();
+    }
+    else if (specialFunction === "BS") {
+      if (this.input.length > 0) {
+        this.input = this.input.slice(0, -1);
+        display.update(this.input, this.operator);
+      }
+    }
+  },
+
+  handleOperator: function(newOperator) {
+    if (this.input === "" && this.result == undefined) return;
+
+    try {
+      if (this.operator) {
+        this.result = calculation.operate(this.operator, this.result, Number(this.input));
+      } else if (this.input !== "") {
+        this.result = Number(this.input);
+      }
+
+      this.operator = newOperator;
+      this.input = "";
+
+      display.update(this.result, this.operator);
+    }
+    catch (error) {
+      this.handleError(error);
+    }
+  },
+
+  handleEquals: function() {
+    if (!this.operator) return;
+
+    try {
+      this.result = calculation.operate(this.operator, this.result, Number(this.input));
+      this.input = "";
+      this.operator = undefined;
+      display.update(this.result, this.operator);
+    }
+    catch (error) {
+      this.handleError(error);
+    }
+  },
+
+  handleDigit: function(inputDigit) {
+    if (this.input.length >= 12) return;
+
+    if (this.input === "0" && inputDigit !== ".") {
+      this.input = inputDigit;
+    }
+    else if (this.input === "0" && inputDigit === "0") {
+      // Reject input -- do not allow multiple leading zeros
+    }
+    else if (this.input === "" && inputDigit === ".") {
+      this.input = "0.";
+    }
+    else if (this.input.includes(".") && inputDigit === ".") {
+      // Reject input -- do not allow multiple decimal points
+    }
+    else {
+      this.input += inputDigit;
+    }
+
+    display.update(this.input, this.operator);
+  },
+
+  clearCalculator: function() {
+    this.resetState();
+    display.update(this.input, this.operator);
+  },
+
+  dispatchAction: function(action, value) {
+    switch (action) {
+      case 'digit': this.handleDigit(value); break;
+      case 'operator': this.handleOperator(value); break;
+      case 'equals': this.handleEquals(); break;
+      case 'special': this.handleSpecialFunction(value); break;
+    }
+  },
+
+  onClick: function(event) {
+    let target = event.target;
+    if (target.nodeName !== "BUTTON") return;
+
+    const { action } = target.dataset;
+    const value = target.textContent;
+
+    this.dispatchAction(action, value);
+  },
+
+  keyMap: {
+    '0': { action: 'digit' }, '1': { action: 'digit' }, '2': { action: 'digit' },
+    '3': { action: 'digit' }, '4': { action: 'digit' }, '5': { action: 'digit' },
+    '6': { action: 'digit' }, '7': { action: 'digit' }, '8': { action: 'digit' },
+    '9': { action: 'digit' }, '.': { action: 'digit' },
+    '+': { action: 'operator' }, '-': { action: 'operator' },
+    '*': { action: 'operator' }, '/': { action: 'operator' },
+    'Enter': { action: 'equals' }, '=': { action: 'equals' },
+    'Backspace': { action: 'special', value: 'BS' },
+    'Escape': { action: 'special', value: 'AC' },
+    'c': { action: 'special', value: 'AC' }, 'C': { action: 'special', value: 'AC' },
+  },
+
+  handleKeyboardInput: function(e) {
+    e.preventDefault();
+    const keyInfo = this.keyMap[e.key];
+    if (keyInfo) {
+      // Use the specific value from the map (for BS/AC) or the key itself
+      const value = keyInfo.value || e.key;
+      this.dispatchAction(keyInfo.action, value);
+    }
+  },
+
+  init: function() {
+    let keyboardElement = document.querySelector("#keyboard");
+    this.clearCalculator();
+    keyboardElement.addEventListener('click', this.onClick.bind(this));
+    window.addEventListener('keydown', this.handleKeyboardInput.bind(this));
   }
-  catch (error) {
-    handleError(error.message);
-  }
-}
+};
 
-function handleEquals() {
-  if (!operator) return;
-
-  try {
-    const calculationResult = operate(operator, result, inputAsNumber());
-    const displayValue = formatForDisplay(calculationResult);
-
-    result = calculationResult;
-    operator = undefined;
-    updateDisplay(displayValue, operator);
-    input = "";
-
-  }
-  catch (error) {
-    handleError(error.message);
-  }
-}
-
-function handleDigit(inputDigit) {
-  if (input.length >= 12) return;
-
-  if (input === "0" && inputDigit !== ".") {
-    input = inputDigit;
-  }
-  else if (input === "0" && inputDigit === "0") {
-    // Reject input -- do not allow multiple leading zeros
-  }
-  else if (input === "" && inputDigit === ".") {
-    input = "0.";
-  }
-  else if (input !== "" && input.includes(".") && inputDigit === ".") {
-    // Reject input -- do not allow multiple decimal points
-  }
-  else {
-    input += inputDigit;
-  }
-
-  updateDisplay(input, operator);
-}
-
-function onClick(event) {
-  let button = event.target;
-
-  const { action } = button.dataset;
-  const value = button.textContent;
-
-  switch (action) {
-    case 'special':
-      handleSpecialFunction(value);
-      break;
-    case 'operator':
-      handleOperator(value);
-      break;
-    case 'equals':
-      handleEquals();
-      break;
-    case 'digit':
-      handleDigit(value);
-      break;
-  }
-}
-
-let input; // String
-let result; // Number or undefined
-let operator; // Single character string or undefined
-
-function clearCalculator() {
-  input = "";
-  result = undefined;
-  operator = undefined;
-  updateDisplay(input, operator);
-}
-
-clearCalculator();
-keyboardElement.addEventListener('click', onClick);
+calculator.init();
