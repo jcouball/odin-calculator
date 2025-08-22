@@ -226,9 +226,9 @@ export class Calculator {
   }
 
   onKeydown(e) {
-    e.preventDefault();
     const keyInfo = this.keyMap[e.key];
     if (keyInfo) {
+      e.preventDefault();
       // Use the specific value from the map (for BS/AC) or the key itself
       const value = keyInfo.value || e.key;
       this.dispatchAction(keyInfo.action, value);
