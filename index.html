@@ -5,54 +5,101 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Odin Calculator Project</title>
   <link rel="stylesheet" href="reset.css">
+  <link rel="stylesheet" href="main.css">
   <link rel="stylesheet" href="calculator.css">
-  <script src="calculator.js" defer></script>
+  <script type="module" src="main.js" defer></script>
 </head>
 <body>
-  <h1>Calculator</h1>
+  <h1>Calculator Project</h1>
 
-  <div id="calculator-1" class="calculator" tabindex="0">
-    <div class="display">
-      <div class="operator">+</div>
-      <div class="output">0</div>
-    </div>
-    <div class="keyboard">
-      <div class="row">
-        <button type="button" class="function" data-action="special">BS</button>
-        <button type="button" class="function" data-action="special">AC</button>
-      </div>
-      <div class="row">
-        <button type="button" data-action="digit">1</button>
-        <button type="button" data-action="digit">2</button>
-        <button type="button" data-action="digit">3</button>
-        <button type="button" class="function" data-action="operator">+</button>
-      </div>
-      <div class="row">
-        <button type="button" data-action="digit">4</button>
-        <button type="button" data-action="digit">5</button>
-        <button type="button" data-action="digit">6</button>
-        <button type="button" class="function" data-action="operator">-</button>
-      </div>
-      <div class="row">
-        <button type="button" data-action="digit">7</button>
-        <button type="button" data-action="digit">8</button>
-        <button type="button" data-action="digit">9</button>
-        <button type="button" class="function" data-action="operator">*</button>
-      </div>
-      <div class="row">
-        <button type="button" data-action="digit">0</button>
-        <button type="button" data-action="digit">.</button>
-        <button type="button" class="function" data-action="equals">=</button>
-        <button type="button" class="function" data-action="operator">/</button>
+  <div class="calculators">
+    <div>
+      <h2>Calculator 1</h2>
+
+      <div id="calculator-1" class="calculator" tabindex="0">
+        <div class="display">
+          <div class="operator">+</div>
+          <div class="output">0</div>
+        </div>
+        <div class="keyboard">
+          <div class="row">
+            <button type="button" class="function" data-action="special">BS</button>
+            <button type="button" class="function" data-action="special">AC</button>
+          </div>
+          <div class="row">
+            <button type="button" data-action="digit">1</button>
+            <button type="button" data-action="digit">2</button>
+            <button type="button" data-action="digit">3</button>
+            <button type="button" class="function" data-action="operator">+</button>
+          </div>
+          <div class="row">
+            <button type="button" data-action="digit">4</button>
+            <button type="button" data-action="digit">5</button>
+            <button type="button" data-action="digit">6</button>
+            <button type="button" class="function" data-action="operator">-</button>
+          </div>
+          <div class="row">
+            <button type="button" data-action="digit">7</button>
+            <button type="button" data-action="digit">8</button>
+            <button type="button" data-action="digit">9</button>
+            <button type="button" class="function" data-action="operator">*</button>
+          </div>
+          <div class="row">
+            <button type="button" data-action="digit">0</button>
+            <button type="button" data-action="digit">.</button>
+            <button type="button" class="function" data-action="equals">=</button>
+            <button type="button" class="function" data-action="operator">/</button>
+          </div>
+        </div>
       </div>
     </div>
 
+    <div>
+      <h2>Calculator 2 (smaller)</h2>
+
+      <div id="calculator-2" class="calculator" tabindex="0" style="--calculator-width: 250px;">
+        <div class="display">
+          <div class="operator">+</div>
+          <div class="output">0</div>
+        </div>
+        <div class="keyboard">
+          <div class="row">
+            <button type="button" class="function" data-action="special">BS</button>
+            <button type="button" class="function" data-action="special">AC</button>
+          </div>
+          <div class="row">
+            <button type="button" data-action="digit">1</button>
+            <button type="button" data-action="digit">2</button>
+            <button type="button" data-action="digit">3</button>
+            <button type="button" class="function" data-action="operator">+</button>
+          </div>
+          <div class="row">
+            <button type="button" data-action="digit">4</button>
+            <button type="button" data-action="digit">5</button>
+            <button type="button" data-action="digit">6</button>
+            <button type="button" class="function" data-action="operator">-</button>
+          </div>
+          <div class="row">
+            <button type="button" data-action="digit">7</button>
+            <button type="button" data-action="digit">8</button>
+            <button type="button" data-action="digit">9</button>
+            <button type="button" class="function" data-action="operator">*</button>
+          </div>
+          <div class="row">
+            <button type="button" data-action="digit">0</button>
+            <button type="button" data-action="digit">.</button>
+            <button type="button" class="function" data-action="equals">=</button>
+            <button type="button" class="function" data-action="operator">/</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </body>
 </html>
 
 <!--
-         AC
+      BS AC
  7  8  9  +
  4  5  6  -
  1  2  3  *

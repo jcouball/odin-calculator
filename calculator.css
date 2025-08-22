@@ -3,12 +3,18 @@
 :root {
   --calculator-width: 300px;
   --calculator-margin: 10px;
-  --display-width: calc(var(--calculator-width) - var(--calculator-margin) * 2);
-  --button-width: calc((var(--calculator-width) - var(--calculator-margin) * 2)/4);
+}
+
+.calculators {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 .calculator {
-  border: 1px solid black;
+  --display-width: calc(var(--calculator-width) - var(--calculator-margin) * 2);
+  --button-width: calc((var(--calculator-width) - var(--calculator-margin) * 2)/4);
+
   margin: 10px;
 
   width: var(--calculator-width);

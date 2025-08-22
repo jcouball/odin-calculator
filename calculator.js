@@ -97,7 +97,7 @@ class Display {
 /**
  * Main application layer for the calculator application
  */
-class Calculator {
+export class Calculator {
   constructor(rootElement) {
     this.rootElement = rootElement;
     this.display = new Display(this.rootElement);
@@ -235,7 +235,3 @@ class Calculator {
     }
   }
 };
-
-calculator1Element = document.querySelector("#calculator-1");
-calculator1 = new Calculator(calculator1Element);
-calculator1.init();
